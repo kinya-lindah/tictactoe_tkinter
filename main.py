@@ -5,7 +5,7 @@ from tkinter import *
 from collections import Counter as c
 
 
-class Player:
+class Player:   #create class that keeps track on name, letter, and score
     def __init__(self, name, letter):
         self.name = name
         self.letter = letter
@@ -15,18 +15,18 @@ class Player:
 class Messagingapp:
     def __init__(self, color):
         self.color = color
-        self.main_window = tk.Tk()
-        self.main_window["bg"] = self.color
-        self.main_window.minsize(300, 400)
+        self.main_window = tk.Tk()  # only one window 
+        self.main_window["bg"] = self.color 
+        self.main_window.minsize(300, 400)  # minimum screen size
         self.frame1 = tk.Frame()
         self.frame2 = tk.Frame()
         self.frame2b = tk.Frame()
         self.frame2a = tk.Frame()
         self.frame3 = tk.Frame()
         self.frame3a = tk.Frame()
-        self.p1 = None
-        self.p2 = None
-        self.totalrounds = 0
+        self.p1 = None   # player1
+        self.p2 = None   # computer
+        self.totalrounds = 0    # could be edited out 
 
         self.label1 = tk.Label(self.frame1, text='AfrofemCoders')
         self.label1["bg"] = self.color
@@ -34,7 +34,7 @@ class Messagingapp:
 
         self.messege1 = tk.Label(self.frame2, text="Hello! Do you want to play xo's with the computer?")
         self.space = tk.Label(self.frame2b, text="")
-        self.yes_button = tk.Button(self.frame2a, text="Yes!", highlightbackground=self.color, command=self.yes)
+        self.yes_button = tk.Button(self.frame2a, text="Yes!", highlightbackground=self.color, command=self.yes)    # the highlightbackground deletes white margin that appears on mac
         self.no_button = tk.Button(self.frame2a, text="No", highlightbackground=self.color , command=self.no)
 
         self.messege1["bg"] = self.color
@@ -92,12 +92,12 @@ class Messagingapp:
         tk.mainloop()
 
     def yes(self):
+        # destory labels and buttons on correct frames and puts correct ones in same frames 
         self.messege1.destroy()
         self.yes_button.destroy()
         self.no_button.destroy()
         self.space.destroy()
         self.no_label.destroy()
-
         self.exit.destroy()
         self.put_info.destroy()
         self.yes_label["bg"] = self.color
@@ -121,11 +121,11 @@ class Messagingapp:
         self.put_info.pack(side='left')
 
     def save(self):
-        if len(self.name_input1.get()) >= 1:  # check whether the number has 12 digits
+        if len(self.name_input1.get()) >= 1:  # save player and computer as 2 players
             self.p1 = Player(self.name_input1.get().capitalize(), "X")
             self.p2 = Player("Computer", "O")
             self.tictactoe()
-        else:
+        else:   # popup saying no name updated 
             tkmb.showerror("Failure. Player 1's",
                            f'{self.name_input1.get()} is not a valid valid. please input your name')
 
@@ -154,13 +154,13 @@ class Messagingapp:
         self.canvas8.pack(side='left')
         self.canvas9.pack(side='left')
         self.restartbutton.pack()
-
+    # go button by button updating x  when player presses 
     def changebutton1(self):
         if self.canvas1['text'] == "            " and not self.winner and len(self.availblepoitions) > 0:
             self.canvas1['text'] = "     X     "
             self.availblepoitions.remove(self.canvas1)
             self.win(self.p1)
-            if not self.winner and len(self.availblepoitions) > 0:
+            if not self.winner and len(self.availblepoitions) > 0: # if no one won and not draw let computer play
                 self.computerplay()
 
     def changebutton2(self):
@@ -228,14 +228,14 @@ class Messagingapp:
             if not self.winner and len(self.availblepoitions) > 0:
                 self.computerplay()
 
-    def computerplay(self):
+    def computerplay(self): 
         winning_positions = [[self.canvas1, self.canvas2,self.canvas3], [self.canvas4, self.canvas5, self.canvas6], [self.canvas7 , self.canvas8, self.canvas9],
                              [self.canvas1, self.canvas4, self.canvas7], [self.canvas2, self.canvas5, self.canvas8], [self.canvas3, self.canvas6,self.canvas9],
                              [self.canvas1, self.canvas5, self.canvas9], [self.canvas3, self.canvas5, self.canvas7]]
         computerpick = 0
-        # this list will thwart whether player 1 will win after computer plays
+        # blockplayer1 list will thwart whether player 1 will win after computer plays
         blockplayer1 = []
-        tryblock = False
+    
         # check whether computer can immediately win
         played = False
         if self.variable.get() == 'Medium':
