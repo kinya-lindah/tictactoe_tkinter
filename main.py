@@ -26,7 +26,6 @@ class Messagingapp:
         self.frame3a = tk.Frame()
         self.p1 = None   # player1
         self.p2 = None   # computer
-        self.totalrounds = 0    # could be edited out 
 
         self.label1 = tk.Label(self.frame1, text='AfrofemCoders')
         self.label1["bg"] = self.color
