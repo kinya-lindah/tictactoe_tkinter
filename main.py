@@ -237,7 +237,30 @@ class Messagingapp:
     
         # check whether computer can immediately win
         played = False
-        if self.variable.get() == 'Medium':
+        
+        if self.variable.get() == "Very Easy":    # if v.easy no checking just random plaecment
+            computerpick = random.choice(self.availblepoitions)
+            computerpick['text'] = "     O      "
+        elif self.variable.get() == "Easy":     #computer only checks where they are going to win
+            for i in range(len(winning_positions)):
+                check1 = []
+                for j in winning_positions[i]:
+                    if j['text'] == "     O      ":
+                        check1.append(1)
+                    elif j['text'] == "     X     ":
+                        check1.append(2)
+                    else:
+                        check1.append(0)
+                if check1.count(1) == 2 and check1.count(0) == 1:
+                    v = check1.index(0)
+                    winning_positions[i][v]['text'] = "     O      "
+                    computerpick = winning_positions[i][v]
+                    played = True
+                    break
+            if not played:
+                computerpick = random.choice(self.availblepoitions)
+                computerpick['text'] = "     O      "
+        elif self.variable.get() == 'Medium':
             for i in range(len(winning_positions)):
                 check1 = []
                 for j in winning_positions[i]:
@@ -262,28 +285,7 @@ class Messagingapp:
             elif len(blockplayer1) == 0 and not played:
                 computerpick = random.choice(self.availblepoitions)
                 computerpick['text'] = "     O      "
-        elif self.variable.get() == "Very Easy":    # if v.easy no checking just random plaecment
-            computerpick = random.choice(self.availblepoitions)
-            computerpick['text'] = "     O      "
-        elif self.variable.get() == "Easy":     #computer only checks where they are going to win
-            for i in range(len(winning_positions)):
-                check1 = []
-                for j in winning_positions[i]:
-                    if j['text'] == "     O      ":
-                        check1.append(1)
-                    elif j['text'] == "     X     ":
-                        check1.append(2)
-                    else:
-                        check1.append(0)
-                if check1.count(1) == 2 and check1.count(0) == 1:
-                    v = check1.index(0)
-                    winning_positions[i][v]['text'] = "     O      "
-                    computerpick = winning_positions[i][v]
-                    played = True
-                    break
-            if not played:
-                computerpick = random.choice(self.availblepoitions)
-                computerpick['text'] = "     O      "
+        
         elif self.variable.get() == "Hard":
             setup = []
             for i in range(len(winning_positions)):     # check if comp can win
