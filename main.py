@@ -87,7 +87,6 @@ class Messagingapp:
         self.frame2a.pack()
         self.frame3.pack()
         self.frame3a.pack()
-
         tk.mainloop()
 
     def yes(self):
