@@ -200,7 +200,7 @@ class Messagingapp:
         self.canvas7.grid(row=3, column=0, sticky="nsew")
         self.canvas8.grid(row=3, column=1, sticky="nsew")
         self.canvas9.grid(row=3, column=2, sticky="nsew")
-        self.restartbutton.pack()
+        self.restartbutton.pack(pady=15)
 
     # go button by button updating x  when player presses
     def changebutton1(self):
@@ -436,7 +436,7 @@ class Messagingapp:
             self.currentscore1["bg"] = self.color
             self.currentscore2["bg"] = self.color
             self.currentscore1.pack()
-            self.currentscore2.pack()
+            self.currentscore2.pack(pady=10)
         # if draw
         if "            " not in [self.canvas1['text'], self.canvas2['text'], self.canvas3['text'],
                                   self.canvas4['text'], self.canvas5['text'], self.canvas6['text'],
@@ -487,4 +487,3 @@ class Messagingapp:
 
 
 r4 = Messagingapp("snow")
-
