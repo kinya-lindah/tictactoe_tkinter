@@ -2,10 +2,6 @@ import tkinter as tk
 import tkinter.messagebox as tkmb
 import random
 from tkinter import *
-import tkinter.ttk as ttk
-from PIL import ImageTk, Image
-
-from collections import Counter as c
 
 
 class Player:  # create class that keeps track on name, letter, and score
@@ -21,7 +17,13 @@ class Messagingapp:
         self.main_window = tk.Tk()  # only one window
         self.main_window["bg"] = self.color
         self.main_window.title("XO's")
-        self.main_window.minsize(200, 200)  # minimum screen size
+        self.main_window.minsize(500, 650)  # minimum screen size
+        self.screen_width = self.main_window.winfo_screenwidth()# next three lines place window at center of page
+        self.screen_height = self.main_window.winfo_screenheight()
+        x_cordinate = int((self.screen_width / 2) - (500 / 2))
+        y_cordinate = int((self.screen_height / 2) - (650 / 2))
+        self.main_window.geometry("{}x{}+{}+{}".format(500, 750, x_cordinate, y_cordinate))
+
         self.frame1 = tk.Frame()
         self.frame2 = tk.Frame()
         self.frame2b = tk.Frame()
