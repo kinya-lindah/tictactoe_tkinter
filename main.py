@@ -1,3 +1,456 @@
+'''import time
+import random
+import _tkinter as tk
+from tkinter.ttk import *
+from tkinter import *
+from beepy import *
+from threading import *
+
+
+# index
+# line 7 simple rockpaperscisors game
+# line 78 digital clock with alarm and timer with tkinter gui
+
+# simple rock-paper-scissors game
+
+
+class Player:
+    def __init__(self, name):
+        self.name = name
+        self.score = 0
+
+
+player1 = Player("Player 1")
+computer = Player("Computer")
+
+
+class Game:
+    def __init__(self):
+        self.winner = False
+        self.chosen1 = None
+        self.chosen2 = None
+        self.docontinue = True
+        self.gamenumber = 1
+
+        while not self.winner and self.docontinue:
+            print(f'Game number {self.gamenumber}')
+            time.sleep(1)
+            self.rules()
+            time.sleep(1)
+            self.playerchoice()
+
+    def winners(self, x, y):  # player 1 rps= x, player 2 rps=y
+        if (x == "s" and y == "p") or (x == "r" and y == "s") or (x == "p" and y == "r"):
+            self.winner = True
+            player1.score += 1
+            time.sleep(1)
+            print(
+                f"\nPlayer 1 wins!\n\nPlayer 1 chose {x} and computer chose {y}. \n\nThe current score is \nPlayer 1: {player1.score} \nComputer: {computer.score}\n")
+
+        elif (y == "s" and x == "p") or (y == "r" and x == "s") or (y == "p" and x == "r"):
+            self.winner = True
+            computer.score += 1
+            time.sleep(1)
+            print(
+                f"\nComputer wins! \n\nPlayer 1 chose {x} and computer chose {y}.\n\nThe current score is \nPlayer 1: {player1.score} \nComputer: {computer.score}\n")
+
+        else:
+            print(
+                f"\nIt was a draw\n\nPlayer 1 chose {x} and computer chose {y}.\n\nThe current score is: \nPlayer 1: {player1.score} \nComputer: {computer.score}\n")
+        time.sleep(2)
+        decision = input("Do you want to continue y/n: ").lower()
+
+        if decision == 'y':
+            self.docontinue = True
+            self.winner = False
+            self.gamenumber += 1
+        else:
+            self.docontinue = False
+
+    def rules(self):
+        print("Paper beats rock, rock beats scissors and scissors beats paper.")
+
+    def playerchoice(self):
+        self.chosen1 = input("\nPlease choose r for rock, p for paper and s for scisors: ").lower()
+        self.chosen2 = random.choice(['r', 'p', 's'])
+        self.winners(self.chosen1, self.chosen2)
+
+
+# Game()
+
+# digital clock with alarm and timer with tkinter gui
+
+x = 'MidnightBlue'
+y = "DarkSlateGray"
+timeron = False
+alarmon = False
+timereached = False
+snoozedalarm = False
+
+
+def pressed():
+    if alarmbutton['fg'] == 'black':
+        alarmbutton.config(fg='pink')
+        alarmlabel.pack(side='left')
+        firstpart.pack(side='left')
+        secondpart.pack(side='left')
+        setbutton2.pack(side='left')
+    else:
+        variable1.set(timer['text'][:2])
+        variable2.set('00')
+        global alarmon
+        alarmbutton.config(fg="black")
+        alarmbutton.config(fg='black')
+        setbutton2['fg'] = 'black'
+        alarmlabel.pack_forget()
+        firstpart.pack_forget()
+        secondpart.pack_forget()
+        setbutton2.pack_forget()
+        if alarmon:
+            snoozebutton.pack_forget()
+            cancelbutton.pack_forget()
+            timer.config(fg=y)
+            alarmon = False
+
+
+def Threaded():
+    t = Thread(target=setalarm)
+    t.start()
+
+
+def setalarm():
+    global timereached
+    global snoozedalarm
+    global alarmon
+    if setbutton2['fg'] == 'black':
+        setbutton2['fg'] = 'pink'
+        alarmon = True
+        while alarmon:
+            set_alarm_time = f"{variable1.get()}:{variable2.get()}"
+            time.sleep(2)
+            current_time = timer['text'][:5]
+            if timer['text'][:5] == set_alarm_time:
+                timereached = True
+                beep(sound='ping')
+                snoozebutton.pack(side=LEFT)
+                cancelbutton.pack(side=LEFT)
+            if timer['text'][:2] == f'{variable1.get()}' and int(timer['text'][3:5]) == int(variable2.get()) + 1:
+                if not snoozedalarm:
+                    snoozebutton.pack_forget()
+                    cancelbutton.pack_forget()
+                    if int(variable2.get()) + 3 > 60:
+                        if (int(variable1.get()) + 1) % 24 < 10:
+                            variable1.set("0" + str(int(variable1.get() + 1)))
+                        elif (int(variable1.get()) + 1) % 24 >= 10:
+                            variable1.set(str(int(variable1.get()) + 1))
+                        if int(variable2.get()) + 3 - 60 < 10:
+                            variable2.set("0" + str(int(variable2.get() + 3 - 60)))
+                        elif int(variable2.get()) + 3 - 60 >= 10:
+                            variable2.set(str(int(variable2.get() + 3 - 60)))
+                    else:
+                        variable2.set(str(int(variable2.get()) + 3))
+    else:
+        setbutton2['fg'] = 'black'
+        alarmon = False
+        snoozedalarm = False
+        if timereached:
+            snoozebutton.pack_forget()
+            cancelbutton.pack_forget()
+
+
+def snooze():
+    global snoozedalarm
+    snoozedalarm = True
+    if int(variable2.get()) + 10 > 60:
+        print('snoozed')
+        if int(variable1.get()) + 1 < 10:
+            variable1.set("0" + str(int(variable1.get()) + 1))
+        elif int(variable1.get()) + 1 >= 10:
+            variable1.set(str(int(variable1.get()) + 1))
+        if int(variable2.get()) + 10 - 60 < 10:
+            variable2.set("0" + str(int(variable2.get()) + 10 - 60))
+        elif int(variable2.get()) + 10 - 60 >= 10:
+            variable2.set(str(int(variable2.get()) + 10 - 60))
+    else:
+        variable2.set(str(int(variable2.get()) + 10))
+
+
+def cancelalarm():
+    global alarmon
+    global snoozedalarm
+    snoozedalarm = False
+    alarmon = False
+    snoozebutton.pack_forget()
+    cancelbutton.pack_forget()
+    setbutton2['fg'] = 'black'
+    alarmlabel.pack_forget()
+    firstpart.pack_forget()
+    secondpart.pack_forget()
+    setbutton2.pack_forget()
+    alarmbutton.config(fg="black")
+
+
+def pressedt():
+    global timeron
+    if timerbutton['fg'] == 'black':
+        timerbutton.config(fg="pink")
+        timerlabel.pack(side='left')
+        thirdpart.pack(side='left')
+        forthpart.pack(side='left')
+        fifthpart.pack(side='left')
+        setbutton.pack(side='left')
+        timeron = True
+    else:
+        timerbutton.config(fg="black")
+        setbutton.config(fg="black")
+        timerlabel.pack_forget()
+        thirdpart.pack_forget()
+        forthpart.pack_forget()
+        fifthpart.pack_forget()
+        setbutton.pack_forget()
+        variable5.set('00')
+        variable4.set('00')
+        variable3.set('00')
+        setbutton['text'] = 'START'
+        if timeron:
+            snoozebuttontimer.pack_forget()
+            cancelbuttontimer.pack_forget()
+        timeron = False
+
+
+def settimer():
+    global timeron
+    if setbutton['fg'] == 'black':
+        active()
+    elif setbutton['fg'] == 'pink':
+        print("THERE")
+        variable5.set('00')
+        variable4.set('00')
+        variable3.set('00')
+        setbutton['text'] = 'START'
+        timerbutton.config(fg="black")
+        setbutton.config(fg="black")
+        timerlabel.pack_forget()
+        thirdpart.pack_forget()
+        forthpart.pack_forget()
+        fifthpart.pack_forget()
+        setbutton.pack_forget()
+        snoozebuttontimer.pack_forget()
+        cancelbuttontimer.pack_forget()
+        timeron = False
+
+
+def active():
+    global timeron
+    snoozebuttontimer.pack(side='left')
+    cancelbuttontimer.pack(side='left')
+    tt = int(variable3.get()) * 3600 + int(variable4.get()) * 60 + int(variable5.get())
+    while tt >= 0 and timeron:
+        setbutton['text'] = 'STOP'
+        setbutton.config(fg="pink")
+        minute, second = (tt // 60, tt % 60)
+        hour = 0
+        if minute > 60:
+            hour, minute = (minute // 60, minute % 60)
+        variable5.set(second)
+        variable4.set(minute)
+        variable3.set(hour)
+        # Update the time frame
+        setframes.update()
+        time.sleep(1)
+        if (tt == 0):
+            variable5.set('00')
+            variable4.set('00')
+            variable3.set('00')
+            beep(sound='ready')
+        tt -= 1
+
+
+def add30():
+    tt = int(variable3.get()) * 3600 + int(variable4.get()) * 60 + int(variable5.get())
+    tt += 30
+    minute, second = (tt // 60, tt % 60)
+    hour = 0
+    if minute > 60:
+        hour, minute = (minute // 60, minute % 60)
+    variable5.set(second)
+    variable4.set(minute)
+    variable3.set(hour)
+    active()
+
+
+def sub30():
+    tt = int(variable3.get()) * 3600 + int(variable4.get()) * 60 + int(variable5.get())
+    tt -= 30
+    minute, second = (tt // 60, tt % 60)
+    hour = 0
+    if minute > 60:
+        hour, minute = (minute // 60, minute % 60)
+    variable5.set(second)
+    variable4.set(minute)
+    variable3.set(hour)
+    active()
+
+
+root = tk.Tk()
+root.minsize(500, 350)
+root.title("Alarm Clock")
+empty = Label(root, text="", bg=x)
+empty1 = Label(root, text="", bg=x)
+
+timer = Label(root, text=time.strftime('%H:%M:%S '), font=('calibri', 25, 'bold'), borderwidth=2, relief="raised",
+              foreground=y, bg="AliceBlue")
+buttonframes = Frame(root)
+buttonframes.config(background=x)
+alarmbutton = tk.Button(buttonframes, text="Alarm", command=pressed, )
+empty2 = Label(buttonframes, text="", bg=x)
+timerbutton = Button(buttonframes, text="Timer", command=pressedt)
+
+setframes = Frame(root, bg=x)
+empty3 = Label(setframes, text="", bg=x)
+variable1 = StringVar(setframes)
+variable1.set(timer['text'][:2])
+firstpart = OptionMenu(setframes, variable1, '00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11',
+                       '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24')
+variable2 = StringVar(setframes)
+variable2.set("00")
+secondpart = OptionMenu(setframes, variable2, '00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11',
+                        '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27',
+                        '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43',
+                        '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59',
+                        '60')
+setbutton2 = Button(setframes, text="SET", command=Threaded, fg='black')
+firstpart.config(bg=x)
+secondpart.config(bg=x)
+
+variable3 = StringVar(setframes)
+variable3.set("00")
+thirdpart = OptionMenu(setframes, variable3, '00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11',
+                       '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24')
+variable4 = StringVar(setframes)
+variable4.set("00")
+forthpart = OptionMenu(setframes, variable4, '00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11',
+                       '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27',
+                       '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43',
+                       '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59',
+                       '60')
+variable5 = StringVar(setframes)
+variable5.set("00")
+fifthpart = OptionMenu(setframes, variable5, '00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11',
+                       '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27',
+                       '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43',
+                       '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59',
+                       '60')
+thirdpart.config(bg=x)
+forthpart.config(bg=x)
+fifthpart.config(bg=x)
+setbutton = Button(setframes, text="START", command=settimer)
+alarmlabel = Label(setframes, text="Alarm", bg=x, fg='White')
+timerlabel = Label(setframes, text="Timer", bg=x, fg='White')
+
+empty4 = Frame(root, bg=x)
+e1 = Label(empty4, bg=x)
+
+snoozeframes = Frame(root, bg=x, bd=6)
+snoozebutton = Button(snoozeframes, text="+10 min", borderwidth=0, command=snooze)
+cancelbutton = Button(snoozeframes, text="Done", command=cancelalarm)
+
+timersnoozeframes = Frame(root, bg=x)
+snoozebuttontimer = Button(timersnoozeframes, text="+30 Seconds", command=add30)
+cancelbuttontimer = Button(timersnoozeframes, text="-30 Seconds", command=sub30)
+timeleftlabel = Label(timersnoozeframes, text="1", bg=x, relief="raised", fg='white')
+
+
+def ticker():
+    timer.config(text=time.strftime('%H:%M:%S '))
+    timer.after(1000, ticker)
+
+
+empty1.pack()
+buttonframes.pack()
+alarmbutton.pack(side='left')
+empty2.pack(side='left')
+timerbutton.pack(side='left')
+empty.pack()
+timer.pack()
+empty3.pack()
+setframes.pack()
+empty4.pack()
+e1.pack()
+
+snoozeframes.pack()
+timersnoozeframes.pack()
+
+ticker()
+root.config(background=x)
+root.mainloop()
+'''
+
+'''
+# monopoly game without gui
+class PlayerMonopoly:
+    def __init__(self, name,  pcash, letter):
+        self.name = name
+        self.pcash = pcash
+        self.letter = letter
+        self.passets = []
+
+
+class Monopoly:
+    def __init__(self):
+        # assets [[property name, if one property, charge this rent]]
+        self.assets = [['Mediterranean Ave', 1, -10, 2, -30, 3, -90, 4, -160, 'Shop', -250, 'Mortgage value', -30, 'House cost', -50, 'Shop cost', '50 and 4 houses'], ['Baltic Avenue', 1, -20, 2, -60, 3, -1800, 4, -3200, 'Shop', -450, 'Mortgage value', -30, 'House cost', -50, 'Shop cost', '50 and 4 houses'],
+                       ['Oriental Avenue', 1, -30, 2, -90, 3, -270, 4, -400, 'Shop', -550, 'Mortgage value', -50, 'House cost', -50, 'Shop cost', '50 and 4 houses'], ['Vermont Avenue', 1, -30, 2, -90, 3, -270, 4, -400, 'Shop', -550, 'Mortgage value', -50, 'House cost', -50, 'Shop cost', '50 and 4 houses'], ['Vermont Avenue', 1, -40, 2, -100, 3, -300, 4, -450, 'Shop', -600, 'Mortgage value', -60, 'House cost', -50, 'Shop cost', '50 and 4 houses'],
+                       ['St Charles Place', 1, -50, 2, -150, 3, -450, 4, -625, 'Shop', -750, 'Mortgage value', -70, 'House cost', -100, 'Shop cost', '100 and 4 houses'], ['State Avenue', 1, -50, 2, -150, 3, -450, 4, -625, 'Shop', -750, 'Mortgage value', -70, 'House cost', -100, 'Shop cost', '100 and 4 houses'], ['Virginia Avenue', 1, -60, 2, -80, 3, -500, 4, -700, 'Shop', -900, 'Mortgage value', -80, 'House cost', -100, 'Shop cost', '100 and 4 houses'],
+                       ['St James Palace', 1, -70, 2, -200, 3, -550, 4, -750, 'Shop', -950, 'Mortgage value', -90, 'House cost', -100, 'Shop cost', '100 and 4 houses'], ['Tennessee Avenue', 1, -70, 2, -200, 3, -550, 4, -750, 'Shop', -950, 'Mortgage value', -90, 'House cost', -100, 'Shop cost', '100 and 4 houses'], ['New York Avenue', 1, -80, 2, -220, 3, -600, 4, -800, 'Shop', -1000, 'Mortgage value', -100, 'House cost', -110, 'Shop cost', '100 and 4 houses'],
+                       ['Kentucky Ave', 1, -90, 2, -250, 3, -700, 4, -875, 'Shop', -1050, 'Mortgage value', -110, 'House cost', -150, 'Shop cost', '150 and 4 houses'], ['Indiana Avenue', 1, -90, 2, -250, 3, -700, 4, -875, 'Shop', -1050, 'Mortgage value', -110, 'House cost', -150, 'Shop cost', '150 and 4 houses'], ['Illinois Avenue', 1, -100, 2, -300, 3, -750, 4, -925, 'Shop', -1100, 'Mortgage value', -120, 'House cost', -150, 'Shop cost', '150 and 4 houses'],
+                       ['Atlantic Palace', 1, -110, 2, -330, 3, -800, 4, -975, 'Shop', -1150, 'Mortgage value', -130, 'House cost', -150, 'Shop cost', '150 and 4 houses'], ['Ventor Avenue', 1, -110, 2, -330, 3, -800, 4, -975, 'Shop', -1150, 'Mortgage value', -130, 'House cost', -150, 'Shop cost', '150 and 4 houses'], ['Marvin Avenue', 1, -120, 2, -360, 3, -850, 4, -1025, 'Shop', -1200, 'Mortgage value', -140, 'House cost', -150, 'Shop cost', '150 and 4 houses'],
+                       ['Pacific Ave', 1, -130, 2, -390, 3, -900, 4, -1100, 'Shop', -1275, 'Mortgage value', -150, 'House cost', -200, 'Shop cost', '200 and 4 houses'], ['NC Avenue', 1, -130, 2, -390, 3, -900, 4, -1100, 'Shop', -1275, 'Mortgage value', -150, 'House cost', -200, 'Shop cost', '200 and 4 houses'], ['Pennsylvania Avenue', 1, -150, 2, -450, 3, -1000, 4, -1200, 'Shop', -1400, 'Mortgage value', -160, 'House cost', -200, 'Shop cost', '200 and 4 houses'],
+                       ['Park Avenue', 1, -175, 2, -500, 3, -1100, 4, -1300, 'Shop', -1500, 'Mortgage value', -175, 'House cost', -200, 'Shop cost', '200 and 4 houses'], ['Broad Walk', 1, -200, 2, -600, 3, -1400, 4, -1700, 'Shop', -20500, 'Mortgage value', -200, 'House cost', -200, 'Shop cost', '200 and 4 houses'],
+                       ['Electric Company', 1, -(self.dice*4), 2, -(self.dice*10)],['Water Works', 1, -(self.dice*4), 2, -(self.dice*10)],
+                       ['Reading Railroad', 1, -25, 2, -50, 3, -100, 4, -200, 'Mortgage Value', -100], ['Pennsylvania Railroad', 1, -25, 2, -50, 3, -100, 4, -200, 'Mortgage Value', -100], ['B&O Railroad', 1, -25, 2, -50, 3, -100, 4, -200, 'Mortgage Value', -100], ['Short Line Railroad', 1, -25, 2, -50, 3, -100, 4, -200, 'Mortgage Value', -100]]
+        # board[[spot, (color, property, price), [people on this spot]]
+        self.board = [[0, ('none', "GO", 200), []], [1, ('Brown', 'Mediterranean Ave', -60), []],
+                      [2, ("none", 'Community chest', 0), []], [3, ('Brown', 'Baltic Avenue', -60), []],
+                      [4, ('none', 'Income Tax', -200), []], [5, ('none', 'Reading Railroad', -200), []],
+                      [6, ('Blue', 'Oriental Avenue', -100), []], [7, ('none', 'Chance', 0), []],
+                      [8, ('Blue', 'Vermont Avenue', -100), []], [9, ('Blue', 'Connecticut Avenue', -120), []],
+                      [10, ('none', "In Jail", 0), []], [11, ('Pink', 'St Charles Place', -140), []],
+                      [12, ("none", 'Electric Company', 0)], [13, ('Pink', 'State Avenue', -140), []],
+                      [14, ('Pink', 'Virginia Avenue', -160), []], [15, ('none', 'Pennsylvania Railroad', -200), []],
+                      [16, ('Orange', 'St James Palace', -180), []], [17, ('none', 'Community Chest', 0), []],
+                      [18, ('Orange', 'Tennessee Avenue', -180), []], [19, ('Orange', 'New York Avenue', -200), []],
+                      [20, ('none', "Free Parking", 0), []], [21, ('Red', 'Kentucky Ave', -220), []],
+                      [22, ("none", 'Chance', 0), []], [23, ('Red', 'Indiana Avenue', -220), []],
+                      [14, ('Red', 'Illinois Avenue', -240), []], [25, ('none', 'B&O Railroad', -200), []],
+                      [26, ('Yellow', 'Atlantic Palace', -260), []], [17, ('Yellow', 'Ventor Avenue', -260), []],
+                      [28, ('none', 'Water Works', -150), []], [29, ('Yellow', 'Marvin Avenue', -280), []],
+                      [30, ('none', "Go to Jail", 0), []], [31, ('Green', 'Pacific Ave', -300), []],
+                      [32, ("Green", 'NC Avenue', -300), []], [33, ("none", 'Community chest', 0), []],
+                      [14, ('Green', 'Pennsylvania Avenue', -320), []], [35, ('none', 'Short Line Railroad', -200), []],
+                      [36, ("none", 'Chance', 0), []], [37, ('Purple', 'Park Avenue', -350), []],
+                      [38, ('none', 'Luxury Tax', -100), []], [29, ('Purple', 'Broad Walk', -400), []]]
+        self.cash = 20580
+
+    def roll(self):
+        die1 = random.choice([1, 2, 3, 4, 5, 6])
+        die2 = random.choice([1, 2, 3, 4, 5, 6])
+        self.dice = die1+die2
+
+    def play(self):
+        player1name = input("Please type in your name. Player 1: ")
+        player2name = input("Please type in your name. Player 2: ")
+        player3name = input("Please type in your name. Player 3: ")
+        self.p1 = PlayerMonopoly(player1name, 1500, player1name[0].upper())
+        self.p2 = PlayerMonopoly(player2name, 1500, player2name[0].upper())
+        self.p3 = PlayerMonopoly(player3name, 1500, player3name[0].upper())
+        self.continued = True
+
+        while self.p1.pcash + self.p2.pcash + self.p3.pcash == 0 or not self.continued:
+            self.cash -= 4500
+
+
+'''
 import tkinter as tk
 import tkinter.messagebox as tkmb
 import random
@@ -11,7 +464,7 @@ class Player:  # create class that keeps track on name, letter, and score
         self.score = 0
 
 
-class Messagingapp:
+class XOapp:
     def __init__(self, color):
         self.color = color
         self.main_window = tk.Tk()  # only one window
@@ -22,7 +475,7 @@ class Messagingapp:
         self.screen_height = self.main_window.winfo_screenheight()
         x_cordinate = int((self.screen_width / 2) - (500 / 2))
         y_cordinate = int((self.screen_height / 2) - (650 / 2))
-        self.main_window.geometry("{}x{}+{}+{}".format(500, 750, x_cordinate, y_cordinate))
+        self.main_window.geometry("{}x{}+{}+{}".format(500, 650, x_cordinate, y_cordinate))
 
         self.frame1 = tk.Frame()
         self.frame2 = tk.Frame()
@@ -44,35 +497,35 @@ class Messagingapp:
         self.no_button = tk.Button(self.frame2a, text="No", highlightbackground=self.color, command=self.no)
 
         #perharps working with images
-        self.image1 = PhotoImage(file=r"TLE.png").subsample(3, 3)
-        self.image2 = PhotoImage(file=r"TME.png").subsample(3, 3)
-        self.image3 = PhotoImage(file=r"TRE.png").subsample(3, 3)
-        self.image4 = PhotoImage(file=r"MLE.png").subsample(3, 3)
-        self.image5 = PhotoImage(file=r"MME.png").subsample(3, 3)
-        self.image6 = PhotoImage(file=r"MRE.png").subsample(3, 3)
-        self.image7 = PhotoImage(file=r"ble.png").subsample(3, 3)
-        self.image8 = PhotoImage(file=r"bme.png").subsample(3, 3)
-        self.image9 = PhotoImage(file=r"bre.png").subsample(3, 3)
+        self.image1 = PhotoImage(file=r"tictactoe/1_e.png").subsample(2, 2)
+        self.image2 = PhotoImage(file=r"tictactoe/2_e.png").subsample(2, 2)
+        self.image3 = PhotoImage(file=r"tictactoe/3_e.png").subsample(2, 2)
+        self.image4 = PhotoImage(file=r"tictactoe/4_e.png").subsample(2, 2)
+        self.image5 = PhotoImage(file=r"tictactoe/5_e.png").subsample(2, 2)
+        self.image6 = PhotoImage(file=r"tictactoe/6_e.png").subsample(2, 2)
+        self.image7 = PhotoImage(file=r"tictactoe/7_e.png").subsample(2, 2)
+        self.image8 = PhotoImage(file=r"tictactoe/8_e.png").subsample(2, 2)
+        self.image9 = PhotoImage(file=r"tictactoe/9_e.png").subsample(2, 2)
 
-        self.image1x = PhotoImage(file=r"TLX.png").subsample(3, 3)
-        self.image2x = PhotoImage(file=r"TMX.png").subsample(3, 3)
-        self.image3x = PhotoImage(file=r"TRX.png").subsample(3, 3)
-        self.image4x = PhotoImage(file=r"MLX.png").subsample(3, 3)
-        self.image5x = PhotoImage(file=r"MMX.png").subsample(3, 3)
-        self.image6x = PhotoImage(file=r"MRX.png").subsample(3, 3)
-        self.image7x = PhotoImage(file=r"BLX.png").subsample(3, 3)
-        self.image8x = PhotoImage(file=r"BMX.png").subsample(3, 3)
-        self.image9x = PhotoImage(file=r"BRX.png").subsample(3, 3)
+        self.image1x = PhotoImage(file=r"tictactoe/1_x.png").subsample(2, 2)
+        self.image2x = PhotoImage(file=r"tictactoe/2_x.png").subsample(2, 2)
+        self.image3x = PhotoImage(file=r"tictactoe/3_x.png").subsample(2, 2)
+        self.image4x = PhotoImage(file=r"tictactoe/4_x.png").subsample(2, 2)
+        self.image5x = PhotoImage(file=r"tictactoe/5_x.png").subsample(2, 2)
+        self.image6x = PhotoImage(file=r"tictactoe/6_x.png").subsample(2, 2)
+        self.image7x = PhotoImage(file=r"tictactoe/7_x.png").subsample(2, 2)
+        self.image8x = PhotoImage(file=r"tictactoe/8_x.png").subsample(2, 2)
+        self.image9x = PhotoImage(file=r"tictactoe/9_x.png").subsample(2, 2)
 
-        self.image1o = PhotoImage(file=r"TLO.png").subsample(3, 3)
-        self.image2o = PhotoImage(file=r"TMO.png").subsample(3, 3)
-        self.image3o = PhotoImage(file=r"TRO.png").subsample(3, 3)
-        self.image4o = PhotoImage(file=r"MLO.png").subsample(3, 3)
-        self.image5o = PhotoImage(file=r"MMO.png").subsample(3, 3)
-        self.image6o = PhotoImage(file=r"MRO.png").subsample(3, 3)
-        self.image7o = PhotoImage(file=r"BLO.png").subsample(3, 3)
-        self.image8o = PhotoImage(file=r"BMO.png").subsample(3, 3)
-        self.image9o = PhotoImage(file=r"BRO.png").subsample(3, 3)
+        self.image1o = PhotoImage(file=r"tictactoe/1_o.png").subsample(2, 2)
+        self.image2o = PhotoImage(file=r"tictactoe/2_o.png").subsample(2, 2)
+        self.image3o = PhotoImage(file=r"tictactoe/3_o.png").subsample(2, 2)
+        self.image4o = PhotoImage(file=r"tictactoe/4_o.png").subsample(2, 2)
+        self.image5o = PhotoImage(file=r"tictactoe/5_o.png").subsample(2, 2)
+        self.image6o = PhotoImage(file=r"tictactoe/6_o.png").subsample(2, 2)
+        self.image7o = PhotoImage(file=r"tictactoe/7_o.png").subsample(2, 2)
+        self.image8o = PhotoImage(file=r"tictactoe/8_o.png").subsample(2, 2)
+        self.image9o = PhotoImage(file=r"tictactoe/9_o.png").subsample(2, 2)
 
         self.messege1["bg"] = self.color
         self.space["bg"] = self.color
@@ -101,23 +554,31 @@ class Messagingapp:
         self.save_phone_number = tk.Button(self.frame3, text="Start", highlightbackground=self.color, command=self.save)
 
         self.canvas1 = tk.Button(self.frame2, text="            ", image=self.image1, highlightbackground=self.color,
-                                 highlightthickness=0, command=self.changebutton1, borderwidth=0, bd=0, anchor=E)
+                                 highlightthickness = 0, command=self.changebutton1, borderwidth=0, bd=0, anchor=E,padx=0,
+                                 pady=0, relief=SUNKEN )
         self.canvas2 = tk.Button(self.frame2, text="            ", image=self.image2,highlightbackground=self.color,
-                                 highlightthickness=0, command=self.changebutton2, borderwidth=0, bd=0, anchor=W)
+                                 highlightthickness=0, command=self.changebutton2, borderwidth=0, bd=0, anchor=W,padx=0,
+                                 pady=0, relief=SUNKEN)
         self.canvas3 = tk.Button(self.frame2, text="            ", image=self.image3, highlightbackground=self.color,
-                                 highlightthickness=0, command=self.changebutton3, borderwidth=0, bd=0, anchor=S)
+                                 highlightthickness=0, command=self.changebutton3, borderwidth=0, bd=0, anchor=S,padx=0,
+                                 pady=0, relief=SUNKEN )
         self.canvas4 = tk.Button(self.frame2, text="            ", image=self.image4, highlightbackground=self.color,
-                                 highlightthickness=0, command=self.changebutton4, borderwidth=0, bd=0)
+                                 highlightthickness=0, command=self.changebutton4, borderwidth=0, bd=0, padx=0, pady=0,
+                                 relief=SUNKEN)
         self.canvas5 = tk.Button(self.frame2, text="            ", image=self.image5, highlightbackground=self.color,
-                                 highlightthickness=0, command=self.changebutton5, borderwidth=0, bd=0, anchor=N)
+                                 highlightthickness=0, command=self.changebutton5, borderwidth=0, bd=0, anchor=CENTER,
+                                 padx=0, pady=0, relief=SUNKEN)
         self.canvas6 = tk.Button(self.frame2, text="            ", image=self.image6, highlightbackground=self.color,
-                                 highlightthickness=0, command=self.changebutton6, borderwidth=0, bd=0, anchor=N )
+                                 highlightthickness=0, command=self.changebutton6, borderwidth=0, bd=0, anchor=N,padx=0,
+                                 pady=0, relief=SUNKEN)
         self.canvas7 = tk.Button(self.frame2, text="            ", image=self.image7, highlightbackground=self.color,
-                                 highlightthickness=0, command=self.changebutton7, borderwidth=0, bd=0, anchor=W)
+                                 highlightthickness=0, command=self.changebutton7, borderwidth=0, bd=0, anchor=W,padx=0,
+                                 pady=0, relief=SUNKEN)
         self.canvas8 = tk.Button(self.frame2, text="            ", image=self.image8, highlightbackground=self.color,
-                                 highlightthickness=0, command=self.changebutton8, borderwidth=0, bd=0)
+                                 highlightthickness=0, command=self.changebutton8, borderwidth=0, bd=0,padx=0, pady=0, relief=SUNKEN)
         self.canvas9 = tk.Button(self.frame2, text="            ", image=self.image9, highlightbackground=self.color,
-                                 highlightthickness=0, command=self.changebutton9, borderwidth=0, bd=0, anchor=E)
+                                 highlightthickness=0, command=self.changebutton9, borderwidth=0, bd=0, anchor=E,padx=0,
+                                 pady=0, relief=SUNKEN)
         self.restartbutton = tk.Button(self.frame3a, text="Restart", highlightbackground=self.color,
                                        command=self.restart)
         self.availblepoitions = [self.canvas1, self.canvas2, self.canvas3, self.canvas4, self.canvas5, self.canvas6,
@@ -392,6 +853,7 @@ class Messagingapp:
                 computerpick = random.choice(joints)
                 computerpick['text'] = "     O      "
             if len(blockplayer1) == 0 and not played and len(joints) < 2:
+
                 computerpick = random.choice(self.availblepoitions)
                 computerpick['text'] = "     O      "
 
@@ -477,6 +939,7 @@ class Messagingapp:
         self.canvas7['image'] = self.image7
         self.canvas8['image'] = self.image8
         self.canvas9['image'] = self.image9
+
         self.winner = False
         for i in [self.canvas1, self.canvas2, self.canvas3, self.canvas4, self.canvas5, self.canvas6, self.canvas7,
                   self.canvas8, self.canvas9]:
@@ -488,4 +951,10 @@ class Messagingapp:
         self.currentscore2.destroy()
 
 
-r4 = Messagingapp("snow")
+r4 = XOapp('#f9f9f9')
+
+
+
+
+
+
